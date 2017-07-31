@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.*
 import com.liuwei.androidadloader.ad.Ad
 import org.jetbrains.anko.*
+import org.jetbrains.anko.db.RowParser
+import org.jetbrains.anko.db.select
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 /**
@@ -35,6 +37,23 @@ class MainActivity : AppCompatActivity() {
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         view.adTypeList.adapter = typeAdapter
 
+        // init ad history
+        val storedAds = AdDbHelper.getInstance(this).readableDatabase.select(AdDbHelper.TABLE_NAME).parseList(object : RowParser<Map<String, Any>> {
+            override fun parseRow(columns: Array<Any?>): Map<String, Any> {
+                return HashMap<String, Any>().apply {
+                    put(AdDbHelper.COLUMN_BODY, columns[1] as String)
+                    put(AdDbHelper.COLUMN_TYPE, Ad.Type.valueOf(columns[2] as String))
+                    put(AdDbHelper.COLUMN_SIZE, Ad.Size.valueOf(columns[3] as String))
+                    put(AdDbHelper.COLUMN_LAST_USE, columns[4] as Long)
+                    put(AdDbHelper.COLUMN_SUCCESS_COUNT, columns[5] as Long)
+                    put(AdDbHelper.COLUMN_FAILURE_COUNT, columns[6] as Long)
+                }
+            }
+        })
+        val historyAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, storedAds)
+        historyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        view.adSelectList.adapter = historyAdapter
+
         view.adLoadBtn.onClick {
             val body = view.adInput.text.toString().trim()
             val type = Ad.Type.values()[view.adTypeList.selectedItemPosition]
@@ -51,8 +70,6 @@ class MainActivity : AppCompatActivity() {
         lateinit var adTypeList: Spinner
         lateinit var adSizeList: Spinner
         lateinit var adLoadBtn: Button
-        lateinit var adLoadStatusTv: TextView
-        lateinit var adContainer: ViewGroup
 
         override fun createView(ui: AnkoContext<MainActivity>): View {
             return with(ui) {

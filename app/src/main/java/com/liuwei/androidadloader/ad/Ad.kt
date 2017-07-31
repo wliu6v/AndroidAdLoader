@@ -6,13 +6,19 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest
 import com.google.android.gms.ads.doubleclick.PublisherAdView
+import com.liuwei.androidadloader.AdDbHelper
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.db.*
 import org.jetbrains.anko.verbose
 
 /**
  * Created by liuwei on 2017/7/26.
  */
-class Ad(val context: Context, val body: String, val size: Size, val type: Type) : AnkoLogger {
+class Ad(val context: Context,
+         val body: String,
+         val size: Size,
+         val type: Type
+) : AnkoLogger {
 
     interface IAdListener {
         fun onStart(adView: View)
@@ -64,6 +70,7 @@ class Ad(val context: Context, val body: String, val size: Size, val type: Type)
                 super.onAdLoaded()
                 verbose("onAdLoaded(Ad:67) - ")
                 listener.onLoaded()
+                save(body)
             }
         }
         adView.loadAd(adBuilder.build())
@@ -77,6 +84,47 @@ class Ad(val context: Context, val body: String, val size: Size, val type: Type)
             Size.SIZE_300_250 -> return AdSize(300, 250)
             else -> return AdSize(320, 50)
         }
+    }
+
+    fun save(adBody: String) {
+        val storedAd = getStoredAd(adBody)
+        if (storedAd != null) {
+            AdDbHelper.getInstance(context).writableDatabase.replace(
+                    AdDbHelper.TABLE_NAME,
+                    AdDbHelper.COLUMN_BODY to body,
+                    AdDbHelper.COLUMN_TYPE to type.toString(),
+                    AdDbHelper.COLUMN_SIZE to size.toString(),
+                    AdDbHelper.COLUMN_LAST_USE to System.currentTimeMillis(),
+                    AdDbHelper.COLUMN_SUCCESS_COUNT to 1 + storedAd[AdDbHelper.COLUMN_SUCCESS_COUNT] as Int,
+                    AdDbHelper.COLUMN_FAILURE_COUNT to storedAd[AdDbHelper.COLUMN_FAILURE_COUNT] as Int)
+        } else {
+            AdDbHelper.getInstance(context).writableDatabase.insert(
+                    AdDbHelper.TABLE_NAME,
+                    AdDbHelper.COLUMN_BODY to body,
+                    AdDbHelper.COLUMN_TYPE to type.toString(),
+                    AdDbHelper.COLUMN_SIZE to size.toString(),
+                    AdDbHelper.COLUMN_LAST_USE to System.currentTimeMillis(),
+                    AdDbHelper.COLUMN_SUCCESS_COUNT to 1,
+                    AdDbHelper.COLUMN_FAILURE_COUNT to 0
+            )
+        }
+    }
+
+    fun getStoredAd(adBody: String): Map<String, Any>? {
+        return AdDbHelper.getInstance(context).readableDatabase.select(AdDbHelper.TABLE_NAME).
+                whereArgs("({${AdDbHelper.COLUMN_BODY}} = {body})", "body" to adBody).parseOpt(
+                object : RowParser<Map<String, Any>> {
+                    override fun parseRow(columns: Array<Any?>): Map<String, Any> {
+                        return HashMap<String, Any>().apply {
+                            put(AdDbHelper.COLUMN_BODY, columns[1] as String)
+                            put(AdDbHelper.COLUMN_TYPE, Type.valueOf(columns[2] as String))
+                            put(AdDbHelper.COLUMN_SIZE, Size.valueOf(columns[3] as String))
+                            put(AdDbHelper.COLUMN_LAST_USE, columns[4] as Long)
+                            put(AdDbHelper.COLUMN_SUCCESS_COUNT, columns[5] as Long)
+                            put(AdDbHelper.COLUMN_FAILURE_COUNT, columns[6] as Long)
+                        }
+                    }
+                })
     }
 
     enum class Size(val size: String) {
