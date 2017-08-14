@@ -3,12 +3,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 25
     buildToolsVersion "26.0.0"
     defaultConfig {
         applicationId "com.liuwei.androidadloader"
         minSdkVersion 14
-        targetSdkVersion 26
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -30,7 +30,7 @@ android {
 }
 
 dependencies {
-    def support_version = "26.0.0"
+    def support_version = "25.4.0"
     def anko_version = "0.10.1"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
