@@ -2,6 +2,7 @@ package com.liuwei.androidadloader
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.*
 import com.liuwei.androidadloader.ad.Ad
@@ -12,7 +13,7 @@ import org.jetbrains.anko.sdk25.coroutines.onItemSelectedListener
 /**
  * Created by liuwei on 2017/7/26.
  */
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AnkoLogger {
 
     lateinit var view: UI
     var dbHistoryAdapter: ArrayAdapter<String>? = null

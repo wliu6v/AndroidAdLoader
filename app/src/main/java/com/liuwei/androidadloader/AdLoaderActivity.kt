@@ -8,13 +8,15 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.liuwei.androidadloader.ad.Ad
 import com.liuwei.androidadloader.ad.AdLoader
+import com.liuwei.androidadloader.ad.DfpBannerAdLoader
+import com.liuwei.androidadloader.ad.FacebookAdLoader
 import org.jetbrains.anko.*
 
 /**
  * Created by liuwei on 2017/7/26.
  */
 
-class AdLoaderActivity : AppCompatActivity() {
+class AdLoaderActivity : AppCompatActivity(), AnkoLogger {
     lateinit var view: UI
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +31,11 @@ class AdLoaderActivity : AppCompatActivity() {
         addMsg(ad.body)
         addMsg("type = ${ad.type} , size = ${ad.size}")
 
-        val adLoader = AdLoader(this, ad)
+        val adLoader = when (ad.type) {
+            Ad.Type.DFP_BANNER -> DfpBannerAdLoader(this, ad)
+            Ad.Type.FB -> FacebookAdLoader(this, ad)
+            else -> DfpBannerAdLoader(this, ad)
+        }
         adLoader.load(object : AdLoader.IAdListener {
             override fun onStart(adView: View) {
                 view.adContainer.addView(adView)
