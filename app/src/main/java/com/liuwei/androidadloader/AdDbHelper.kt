@@ -39,7 +39,7 @@ class AdDbHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, DB_NAME, null, VER
 
     override fun onCreate(db: SQLiteDatabase?) {
         db?.createTable(TABLE_NAME, true,
-//                COLUMN_ID to INTEGER + PRIMARY_KEY + AUTOINCREMENT,
+                //                COLUMN_ID to INTEGER + PRIMARY_KEY + AUTOINCREMENT,
                 COLUMN_ID to SqlType.create("INTEGER PRIMARY KEY AUTOINCREMENT"),
                 COLUMN_BODY to TEXT,
                 COLUMN_TYPE to TEXT,
@@ -56,6 +56,50 @@ class AdDbHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, DB_NAME, null, VER
 
     val Context.database: AdDbHelper
         get() = AdDbHelper.getInstance(applicationContext)
+
+    fun getAll() = readableDatabase.select(TABLE_NAME).parseList(AdRowParser())
+
+    fun getAd(adBody: String) = readableDatabase.select(TABLE_NAME).whereArgs("${AdDbHelper.COLUMN_BODY} = '$adBody'").parseOpt(AdRowParser())
+
+    fun save(ad: Ad) {
+        if (ad.id == 0 && getAd(ad.body) == null) {
+            writableDatabase.insert(
+                    AdDbHelper.TABLE_NAME,
+                    AdDbHelper.COLUMN_ID to ad.id,
+                    AdDbHelper.COLUMN_BODY to ad.body,
+                    AdDbHelper.COLUMN_TYPE to ad.type.toString(),
+                    AdDbHelper.COLUMN_SIZE to ad.size.toString(),
+                    AdDbHelper.COLUMN_LAST_USE to ad.lastUse,
+                    AdDbHelper.COLUMN_SUCCESS_COUNT to ad.successCount,
+                    AdDbHelper.COLUMN_FAILURE_COUNT to ad.failureCount
+            )
+        } else {
+            writableDatabase.replace(
+                    AdDbHelper.TABLE_NAME,
+                    AdDbHelper.COLUMN_ID to ad.id,
+                    AdDbHelper.COLUMN_BODY to ad.body,
+                    AdDbHelper.COLUMN_TYPE to ad.type.toString(),
+                    AdDbHelper.COLUMN_SIZE to ad.size.toString(),
+                    AdDbHelper.COLUMN_LAST_USE to ad.lastUse,
+                    AdDbHelper.COLUMN_SUCCESS_COUNT to ad.successCount,
+                    AdDbHelper.COLUMN_FAILURE_COUNT to ad.failureCount
+            )
+        }
+    }
+
+    class AdRowParser : RowParser<Ad> {
+        override fun parseRow(columns: Array<Any?>): Ad {
+            return Ad(
+                    columns[1] as String,
+                    Ad.Type.valueOf(columns[2] as String),
+                    Ad.Size.valueOf(columns[3] as String),
+                    columns[4] as Long,
+                    (columns[5] as Long).toInt(),
+                    (columns[6] as Long).toInt(),
+                    (columns[0] as Long).toInt()
+            )
+        }
+    }
 }
 
 

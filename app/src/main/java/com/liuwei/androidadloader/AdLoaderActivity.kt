@@ -5,8 +5,9 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.TextView
 import com.liuwei.androidadloader.ad.Ad
+import com.liuwei.androidadloader.ad.AdLoader
 import org.jetbrains.anko.*
 
 /**
@@ -24,15 +25,12 @@ class AdLoaderActivity : AppCompatActivity() {
     }
 
     fun initView() {
-        val body = intent.extras.getString("body")
-        val size = intent.extras.getSerializable("size") as Ad.Size
-        val type = intent.extras.getSerializable("type") as Ad.Type
+        val ad = intent.extras.getParcelable<Ad>("ad") ?: return
+        addMsg(ad.body)
+        addMsg("type = ${ad.type} , size = ${ad.size}")
 
-        addMsg("$body")
-        addMsg("type = $type , size = $size")
-
-        val ad = Ad(this, body, size, type)
-        ad.load(object : Ad.IAdListener {
+        val adLoader = AdLoader(this, ad)
+        adLoader.load(object : AdLoader.IAdListener {
             override fun onStart(adView: View) {
                 view.adContainer.addView(adView)
             }

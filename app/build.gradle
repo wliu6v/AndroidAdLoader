@@ -7,11 +7,12 @@ android {
     buildToolsVersion "26.0.0"
     defaultConfig {
         applicationId "com.liuwei.androidadloader"
-        minSdkVersion 14
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled = true
     }
     buildTypes {
         debug {
@@ -39,6 +40,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.0'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.0'
+    implementation "com.android.support:multidex:1.0.1"
     compile "com.android.support:design:$support_version"
     // support
     // anko
@@ -51,6 +53,6 @@ dependencies {
 
     // ad test
     implementation 'com.flurry.android:ads:6.3.1'
-    implementation 'com.facebook.android:audience-network-sdk:4.17.0'
+    implementation 'com.facebook.android:audience-network-sdk:4.25.0'
     implementation 'com.google.android.gms:play-services-ads:10.0.1'
 }
