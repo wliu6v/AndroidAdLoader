@@ -26,6 +26,7 @@ class FacebookAdLoader(context: Context, ad: Ad) : AdLoader(context, ad) {
             override fun onError(p0: com.facebook.ads.Ad?, p1: AdError?) {
                 info("FacebookAdLoader - onError() - ${p1?.errorCode} , ${p1?.errorMessage}")
                 onError(p1?.errorCode ?: 0, p1?.errorMessage ?: "")
+                saveTestDevice()
             }
 
             override fun onAdLoaded(p0: com.facebook.ads.Ad?) {
@@ -47,8 +48,14 @@ class FacebookAdLoader(context: Context, ad: Ad) : AdLoader(context, ad) {
                 info("FacebookAdLoader - onLoggingImpression()")
             }
         })
+
+        val testDeviceId = getTestDeviceId()
+        testDeviceId?.let {
+            AdSettings.addTestDevice(testDeviceId)
+        }
         onStart(adViewHolder.itemView)
         fbNativeAd.loadAd(NativeAd.MediaCacheFlag.ALL)
+        saveTestDevice()
     }
 
     inner class FbAdViewHolder(context: Context) {

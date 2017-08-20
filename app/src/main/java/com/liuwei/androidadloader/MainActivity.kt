@@ -43,24 +43,28 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
         view.adLoadBtn.onClick {
             val ad: Ad
-            if (view.adSelectList.selectedItemPosition > 0) {
-                ad = adList!![view.adSelectList.selectedItemPosition - 1]
-            } else {
-                val body = view.adInput.text.toString().trim()
-                val storedAd = AdDbHelper.getInstance(this@MainActivity).getAd(body)
-                if (storedAd == null) {
-                    val type = Ad.Type.values()[view.adTypeList.selectedItemPosition]
-                    val size = Ad.Size.values()[view.adSizeList.selectedItemPosition]
-                    ad = Ad(body, type, size)
-                } else {
-                    ad = storedAd
-                    view.adSizeList.setSelection(ad.size.ordinal)
-                    view.adTypeList.setSelection(ad.type.ordinal)
-                    toast("This one has been tested and successed ${ad.successCount} times")
-                }
+//            if (view.adSelectList.selectedItemPosition > 0) {
+//                ad = adList!![view.adSelectList.selectedItemPosition - 1]
+//            } else {
+            val body = view.adInput.text.toString().trim()
+            if (body.isNullOrBlank()) {
+                toast("The ad body must not be empty!")
+                return@onClick
             }
+            val storedAd = AdDbHelper.getInstance(this@MainActivity).getAd(body)
+            if (storedAd == null) {
+                val type = Ad.Type.values()[view.adTypeList.selectedItemPosition]
+                val size = Ad.Size.values()[view.adSizeList.selectedItemPosition]
+                ad = Ad(body, type, size)
+            } else {
+                ad = storedAd
+                view.adSizeList.setSelection(ad.size.ordinal)
+                view.adTypeList.setSelection(ad.type.ordinal)
+                toast("This one has been tested and successed ${ad.successCount} times")
+            }
+//            }
 
-            startActivity(intentFor<AdLoaderActivity>("ad" to ad))
+            startActivity(intentFor<AdLoaderActivity>("ad" to ad, "isTest" to view.adTestSwitch.isChecked))
         }
 
         view.adSelectList.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -77,6 +81,11 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateAdHistory()
     }
 
     private fun updateAdHistory() {
@@ -110,64 +119,82 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         lateinit var adTypeList: Spinner
         lateinit var adSizeList: Spinner
         lateinit var adLoadBtn: Button
+        lateinit var adTestSwitch: Switch
 
         override fun createView(ui: AnkoContext<MainActivity>): View {
             return with(ui) {
-                verticalLayout {
-                    adSelectTip = textView("Ad load history") {
-                        textSize = dip(6).toFloat()
-                    }.lparams {
-                        margin = dip(10)
-                    }
-
-                    adSelectList = spinner().lparams {
-                        width = matchParent
-                        margin = dip(10)
-                    }
-
-                    adInput = editText {
-                        hint = "Input your ad id"
-                    }.lparams {
-                        width = matchParent
-                        margin = dip(10)
-                    }
-
-                    linearLayout {
-                        orientation = LinearLayout.HORIZONTAL
-
-                        textView("Ad type") {
+                scrollView {
+                    verticalLayout {
+                        adSelectTip = textView("Ad load history") {
                             textSize = dip(6).toFloat()
                         }.lparams {
                             margin = dip(10)
                         }
 
-                        adTypeList = spinner().lparams {
+                        adSelectList = spinner().lparams {
                             width = matchParent
                             margin = dip(10)
                         }
-                    }
 
-                    linearLayout {
-                        orientation = LinearLayout.HORIZONTAL
+                        adInput = editText {
+                            hint = "Input your ad id"
+                        }.lparams {
+                            width = matchParent
+                            margin = dip(10)
+                        }
 
-                        textView("Ad size") {
+                        linearLayout {
+                            orientation = LinearLayout.HORIZONTAL
+
+                            textView("Ad type") {
+                                textSize = dip(6).toFloat()
+                            }.lparams {
+                                margin = dip(10)
+                            }
+
+                            adTypeList = spinner().lparams {
+                                width = matchParent
+                                margin = dip(10)
+                            }
+                        }
+
+                        linearLayout {
+                            orientation = LinearLayout.HORIZONTAL
+
+                            textView("Ad size") {
+                                textSize = dip(6).toFloat()
+                            }.lparams {
+                                margin = dip(10)
+                            }
+
+                            adSizeList = spinner().lparams {
+                                width = matchParent
+                                margin = dip(10)
+                            }
+                        }
+
+                        linearLayout {
+                            orientation = LinearLayout.HORIZONTAL
+
+                            textView("Use Test Ad") {
+                                textSize = dip(6).toFloat()
+                            }.lparams {
+                                margin = dip(10)
+                            }
+
+                            adTestSwitch = switch().lparams {
+                                width = matchParent
+                                margin = dip(10)
+                            }
+                        }
+
+                        adLoadBtn = button("Load") {
                             textSize = dip(6).toFloat()
                         }.lparams {
-                            margin = dip(10)
-                        }
-
-                        adSizeList = spinner().lparams {
                             width = matchParent
-                            margin = dip(10)
+                            verticalMargin = dip(12)
+                            horizontalMargin = dip(36)
                         }
-                    }
-
-                    adLoadBtn = button("Load") {
-                        textSize = dip(6).toFloat()
-                    }.lparams {
-                        width = matchParent
-                        verticalMargin = dip(12)
-                        horizontalMargin = dip(36)
                     }
                 }
             }

@@ -59,13 +59,13 @@ class AdDbHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, DB_NAME, null, VER
 
     fun getAll() = readableDatabase.select(TABLE_NAME).parseList(AdRowParser())
 
-    fun getAd(adBody: String) = readableDatabase.select(TABLE_NAME).whereArgs("${AdDbHelper.COLUMN_BODY} = '$adBody'").parseOpt(AdRowParser())
+    fun getAd(adBody: String) = readableDatabase.select(TABLE_NAME).whereArgs("${AdDbHelper.COLUMN_BODY} = '$adBody'").parseList(AdRowParser()).getOrNull(0)
 
     fun save(ad: Ad) {
-        if (ad.id == 0 && getAd(ad.body) == null) {
+        val storedAd = getAd(ad.body)
+        if (storedAd == null) {
             writableDatabase.insert(
                     AdDbHelper.TABLE_NAME,
-                    AdDbHelper.COLUMN_ID to ad.id,
                     AdDbHelper.COLUMN_BODY to ad.body,
                     AdDbHelper.COLUMN_TYPE to ad.type.toString(),
                     AdDbHelper.COLUMN_SIZE to ad.size.toString(),
@@ -76,7 +76,7 @@ class AdDbHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, DB_NAME, null, VER
         } else {
             writableDatabase.replace(
                     AdDbHelper.TABLE_NAME,
-                    AdDbHelper.COLUMN_ID to ad.id,
+                    AdDbHelper.COLUMN_ID to storedAd.id,
                     AdDbHelper.COLUMN_BODY to ad.body,
                     AdDbHelper.COLUMN_TYPE to ad.type.toString(),
                     AdDbHelper.COLUMN_SIZE to ad.size.toString(),

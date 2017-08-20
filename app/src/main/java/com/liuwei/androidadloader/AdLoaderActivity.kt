@@ -3,6 +3,7 @@ package com.liuwei.androidadloader
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -20,11 +21,16 @@ class AdLoaderActivity : AppCompatActivity(), AnkoLogger {
         super.onCreate(savedInstanceState)
         view = UI()
         view.setContentView(this@AdLoaderActivity)
+
         initView()
+
+        setTitle("Ad Detail")
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     fun initView() {
         val ad = intent.extras.getParcelable<Ad>("ad") ?: return
+        val isTest = intent.extras.getBoolean("isTest")
         addMsg(ad.body)
         addMsg("type = ${ad.type} , size = ${ad.size}")
 
@@ -35,6 +41,7 @@ class AdLoaderActivity : AppCompatActivity(), AnkoLogger {
             Ad.Type.FLURRY_NATIVE -> FlurryAdLoader(this, ad)
             else -> DfpBannerAdLoader(this, ad)
         }
+        adLoader.isTestAd = true
         adLoader.loadAd(object : AdLoader.IAdListener {
             override fun onStart(adView: View) {
                 view.adContainer.addView(adView)
@@ -53,6 +60,13 @@ class AdLoaderActivity : AppCompatActivity(), AnkoLogger {
 
             }
         })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            android.R.id.home -> finish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     fun addMsg(msg: String) {

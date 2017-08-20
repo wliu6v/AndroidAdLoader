@@ -47,7 +47,13 @@ class DfpBannerAdLoader(context: Context, ad: Ad) : AdLoader(context, ad) {
                 onLoaded()
             }
         }
+
+        val testDeviceId = getTestDeviceId()
+        testDeviceId?.let {
+            adBuilder.addTestDevice(testDeviceId)
+        }
         onStart(adView)
         adView.loadAd(adBuilder.build())
+        saveTestDevice()
     }
 }
