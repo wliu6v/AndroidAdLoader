@@ -6,10 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.liuwei.androidadloader.ad.Ad
-import com.liuwei.androidadloader.ad.AdLoader
-import com.liuwei.androidadloader.ad.DfpBannerAdLoader
-import com.liuwei.androidadloader.ad.FacebookAdLoader
+import com.liuwei.androidadloader.ad.*
 import org.jetbrains.anko.*
 
 /**
@@ -33,10 +30,12 @@ class AdLoaderActivity : AppCompatActivity(), AnkoLogger {
 
         val adLoader = when (ad.type) {
             Ad.Type.DFP_BANNER -> DfpBannerAdLoader(this, ad)
+            Ad.Type.ADMOB_BANNER -> AdmobAdLoader(this, ad)
             Ad.Type.FB -> FacebookAdLoader(this, ad)
+            Ad.Type.FLURRY_NATIVE -> FlurryAdLoader(this, ad)
             else -> DfpBannerAdLoader(this, ad)
         }
-        adLoader.load(object : AdLoader.IAdListener {
+        adLoader.loadAd(object : AdLoader.IAdListener {
             override fun onStart(adView: View) {
                 view.adContainer.addView(adView)
             }

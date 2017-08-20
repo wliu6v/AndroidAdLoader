@@ -13,24 +13,25 @@ import org.jetbrains.anko.info
  */
 class FacebookAdLoader(context: Context, ad: Ad) : AdLoader(context, ad) {
     lateinit var adViewHolder: FbAdViewHolder
-    override fun load(listener: IAdListener) {
-        this.listener = listener
-
+    override fun load() {
         adViewHolder = FbAdViewHolder(context)
 
         val fbNativeAd = NativeAd(context, ad.body)
         fbNativeAd.setAdListener(object : AdListener {
             override fun onAdClicked(p0: com.facebook.ads.Ad?) {
-                info { "onAdClicked" }
+                info("FacebookAdLoader - onAdClicked()")
+                onOpened()
             }
 
             override fun onError(p0: com.facebook.ads.Ad?, p1: AdError?) {
-                info { "onError : $p1" }
+                info("FacebookAdLoader - onError() - ${p1?.errorCode} , ${p1?.errorMessage}")
+                onError(p1?.errorCode ?: 0, p1?.errorMessage ?: "")
             }
 
-            override fun onAdLoaded(ad: com.facebook.ads.Ad?) {
-                info { "onAdLoaded" }
-                if (ad == null || ad != fbNativeAd) {
+            override fun onAdLoaded(p0: com.facebook.ads.Ad?) {
+                info("FacebookAdLoader - onAdLoaded()")
+                if (p0 == null || p0 != fbNativeAd) {
+                    info("FacebookAdLoader - onAdLoaded() - Should not reach here")
                     return
                 }
 
@@ -38,14 +39,16 @@ class FacebookAdLoader(context: Context, ad: Ad) : AdLoader(context, ad) {
                 adViewHolder.mediaView.setNativeAd(fbNativeAd)
                 adViewHolder.adChoiceView.visibility = View.VISIBLE
                 adViewHolder.adChoiceView.addView(AdChoicesView(context, fbNativeAd, true))
+
+                onLoaded()
             }
 
             override fun onLoggingImpression(p0: com.facebook.ads.Ad?) {
-                info { "onImpression" }
+                info("FacebookAdLoader - onLoggingImpression()")
             }
         })
+        onStart(adViewHolder.itemView)
         fbNativeAd.loadAd(NativeAd.MediaCacheFlag.ALL)
-        this.listener.onStart(adViewHolder.itemView)
     }
 
     inner class FbAdViewHolder(context: Context) {

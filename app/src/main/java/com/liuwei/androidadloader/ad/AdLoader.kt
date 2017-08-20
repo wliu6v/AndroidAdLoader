@@ -14,6 +14,39 @@ abstract class AdLoader(
         val ad: Ad
 ) : AnkoLogger {
 
+    lateinit var listener: IAdListener
+
+    protected abstract fun load()
+
+    fun loadAd(listener: IAdListener) {
+        this.listener = listener
+        load()
+    }
+
+
+    fun onStart(adView: View) {
+        listener.onStart(adView)
+    }
+
+    fun onLoaded() {
+        ad.successCount = ad.successCount + 1
+        save(ad)
+        listener.onLoaded()
+    }
+
+    fun onOpened() {
+        listener.onOpened()
+    }
+
+    fun onError(errorCode: Int, errorMsg: String = "") {
+        if (ad.successCount > 0) {
+            ad.failureCount = ad.failureCount + 1
+            save(ad)
+        }
+        listener.onError(errorCode, errorMsg)
+    }
+
+
     interface IAdListener {
         fun onStart(adView: View)
         fun onLoaded()
@@ -21,9 +54,7 @@ abstract class AdLoader(
         fun onError(errorCode: Int, errorMsg: String = "")
     }
 
-    lateinit var listener: IAdListener
 
-    abstract fun load(listener: IAdListener)
 
     fun newAdSize(size: Ad.Size): AdSize {
         when (size) {
