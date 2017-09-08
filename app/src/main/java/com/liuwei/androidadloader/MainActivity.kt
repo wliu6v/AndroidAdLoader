@@ -2,13 +2,11 @@ package com.liuwei.androidadloader
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import android.widget.*
 import com.liuwei.androidadloader.ad.Ad
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.sdk25.coroutines.onItemSelectedListener
 
 /**
  * Created by liuwei on 2017/7/26.
@@ -43,9 +41,6 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
         view.adLoadBtn.onClick {
             val ad: Ad
-//            if (view.adSelectList.selectedItemPosition > 0) {
-//                ad = adList!![view.adSelectList.selectedItemPosition - 1]
-//            } else {
             val body = view.adInput.text.toString().trim()
             if (body.isNullOrBlank()) {
                 toast("The ad body must not be empty!")
@@ -58,11 +53,10 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
                 ad = Ad(body, type, size)
             } else {
                 ad = storedAd
-                view.adSizeList.setSelection(ad.size.ordinal)
-                view.adTypeList.setSelection(ad.type.ordinal)
+                ad.size = Ad.Size.values()[view.adSizeList.selectedItemPosition]
+                ad.type = Ad.Type.values()[view.adTypeList.selectedItemPosition]
                 toast("This one has been tested and successed ${ad.successCount} times")
             }
-//            }
 
             startActivity(intentFor<AdLoaderActivity>("ad" to ad, "isTest" to view.adTestSwitch.isChecked))
         }

@@ -117,7 +117,7 @@ abstract class AdLoader(
 
             }
 
-            Ad.Type.DFP_BANNER, Ad.Type.DFP_MRAID, Ad.Type.DFP_NATIVE -> {
+            Ad.Type.DFP_BANNER, /*Ad.Type.DFP_MRAID,*/ Ad.Type.DFP_NATIVE -> {
                 // The log will be : .... addTestDevice("123456789ABCDEF0123456789ABCDEF0") ...
                 var index = log.indexOf("addTestDevice")
                 if (index != -1) {

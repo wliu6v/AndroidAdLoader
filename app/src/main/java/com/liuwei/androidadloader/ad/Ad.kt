@@ -8,8 +8,8 @@ import android.os.Parcelable
  */
 data class Ad(
         val body: String,
-        val type: Type,
-        val size: Size,
+        var type: Type,
+        var size: Size,
         var lastUse: Long = 0,
         var successCount: Int = 0,
         var failureCount: Int = 0,
@@ -37,7 +37,8 @@ data class Ad(
     }
 
     companion object {
-        @JvmField val CREATOR: Parcelable.Creator<Ad> = object : Parcelable.Creator<Ad> {
+        @JvmField
+        val CREATOR: Parcelable.Creator<Ad> = object : Parcelable.Creator<Ad> {
             override fun createFromParcel(source: Parcel): Ad = Ad(source)
             override fun newArray(size: Int): Array<Ad?> = arrayOfNulls(size)
         }
@@ -48,7 +49,7 @@ data class Ad(
         ADMOB_BANNER("Admob Banner"),
         FLURRY_NATIVE("Flurry Native"),
         DFP_NATIVE("DFP Native"),
-        DFP_MRAID("DFP Mraid"),
+        //        DFP_MRAID("DFP Mraid"),
         FB("Facebook Native")
     }
 

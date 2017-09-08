@@ -45,6 +45,10 @@ class AdmobAdLoader(context: Context, ad: Ad) : AdLoader(context, ad) {
         }
 
         val adBuilder = AdRequest.Builder()
+        val testDeviceId = getTestDeviceId()
+        testDeviceId?.let {
+            adBuilder.addTestDevice(testDeviceId)
+        }
         adView.loadAd(adBuilder.build())
 
         onStart(adView)
