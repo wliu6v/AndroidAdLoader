@@ -13,7 +13,6 @@ import org.jetbrains.anko.*
 /**
  * Created by liuwei on 2017/7/26.
  */
-
 class AdLoaderActivity : AppCompatActivity(), AnkoLogger {
     lateinit var view: UI
 
@@ -36,6 +35,7 @@ class AdLoaderActivity : AppCompatActivity(), AnkoLogger {
 
         val adLoader = when (ad.type) {
             Ad.Type.DFP_BANNER -> DfpBannerAdLoader(this, ad)
+            Ad.Type.DFP_NATIVE -> DfpNativeAdLoader(this, ad)
             Ad.Type.ADMOB_BANNER -> AdmobAdLoader(this, ad)
             Ad.Type.FB -> FacebookAdLoader(this, ad)
             Ad.Type.FLURRY_NATIVE -> FlurryAdLoader(this, ad)
