@@ -3,12 +3,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion "26.0.0"
     defaultConfig {
         applicationId "com.liuwei.androidadloader"
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -31,16 +31,14 @@ android {
 }
 
 dependencies {
-    def support_version = "25.4.0"
+    def support_version = "26.0.2"
     def anko_version = "0.10.1"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation "com.android.support:appcompat-v7:$support_version"
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.0'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.0'
-    implementation "com.android.support:multidex:1.0.1"
+    implementation "com.android.support:multidex:1.0.2"
     compile "com.android.support:design:$support_version"
     implementation "com.github.bumptech.glide:glide:4.0.0"
     // support
@@ -53,7 +51,8 @@ dependencies {
     implementation "org.jetbrains.anko:anko-appcompat-v7-coroutines:$anko_version"
 
     // ad test
-    implementation 'com.flurry.android:ads:6.3.1'
+    implementation 'com.flurry.android:ads:7.0.0'
     implementation 'com.facebook.android:audience-network-sdk:4.25.0'
-    implementation 'com.google.android.gms:play-services-ads:10.0.1'
+    implementation 'com.google.android.gms:play-services-ads:11.2.2'
+    implementation "com.google.firebase:firebase-ads:11.2.2"
 }

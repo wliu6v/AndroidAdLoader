@@ -114,11 +114,11 @@ class FlurryAdLoader(context: Context, ad: Ad) : AdLoader(context, ad) {
 
         init {
             itemView = LayoutInflater.from(context).inflate(R.layout.flurry_large_ad_view, null)
-            imgView = itemView.findViewById(R.id.ad_img) as ImageView
-            installBtn = itemView.findViewById(R.id.ad_action_btn) as TextView
-            titleTv = itemView.findViewById(R.id.ad_title) as TextView
-            contentTv = itemView.findViewById(R.id.ad_description) as TextView
-            videoContainer = itemView.findViewById(R.id.ad_video_container) as ViewGroup
+            imgView = itemView.findViewById(R.id.ad_img)
+            installBtn = itemView.findViewById(R.id.ad_action_btn)
+            titleTv = itemView.findViewById(R.id.ad_title)
+            contentTv = itemView.findViewById(R.id.ad_description)
+            videoContainer = itemView.findViewById(R.id.ad_video_container)
         }
 
     }

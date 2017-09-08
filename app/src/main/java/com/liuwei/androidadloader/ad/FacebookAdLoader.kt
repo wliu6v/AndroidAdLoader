@@ -65,8 +65,8 @@ class FacebookAdLoader(context: Context, ad: Ad) : AdLoader(context, ad) {
 
         init {
             itemView = LayoutInflater.from(context).inflate(R.layout.fb_native_ad_view, null)
-            mediaView = itemView.findViewById(R.id.ad_media) as MediaView
-            adChoiceView = itemView.findViewById(R.id.ad_choice_container) as ViewGroup
+            mediaView = itemView.findViewById(R.id.ad_media)
+            adChoiceView = itemView.findViewById(R.id.ad_choice_container)
         }
     }
 }
