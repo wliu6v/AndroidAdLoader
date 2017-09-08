@@ -3,12 +3,14 @@ package com.liuwei.androidadloader.ad
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.flurry.android.ads.FlurryAdErrorType
 import com.flurry.android.ads.FlurryAdNative
 import com.flurry.android.ads.FlurryAdNativeListener
+import com.flurry.android.ads.FlurryAdTargeting
 import com.liuwei.androidadloader.Constants
 import com.liuwei.androidadloader.R
 import org.jetbrains.anko.info
@@ -53,12 +55,23 @@ class FlurryAdLoader(context: Context, ad: Ad) : AdLoader(context, ad) {
 
                 flurryAdNative.setTrackingView(adViewHolder.itemView)
 
-                Glide.with(context)
-                        .load(flurryAdNative.getAsset("secHqImage")?.value)
-                        .into(adViewHolder.imgView)
                 adViewHolder.titleTv.text = flurryAdNative.getAsset("headline")?.value
                 adViewHolder.contentTv.text = flurryAdNative.getAsset("summary")?.value
                 adViewHolder.installBtn.text = flurryAdNative.getAsset("callToAction")?.value
+
+                adViewHolder.videoContainer.visibility = View.INVISIBLE
+                if (flurryAdNative.isVideoAd) {
+                    adViewHolder.imgView.visibility = View.INVISIBLE
+                    flurryAdNative.getAsset("videoUrl")?.let {
+                        adViewHolder.videoContainer.visibility = View.VISIBLE
+                        it.loadAssetIntoView(adViewHolder.videoContainer)
+                    }
+                } else {
+                    adViewHolder.imgView.visibility = View.VISIBLE
+                    Glide.with(context)
+                            .load(flurryAdNative.getAsset("secHqImage")?.value)
+                            .into(adViewHolder.imgView)
+                }
 
                 onLoaded()
             }
@@ -81,6 +94,12 @@ class FlurryAdLoader(context: Context, ad: Ad) : AdLoader(context, ad) {
             }
         })
 
+        if (isTestAd) {
+            val flurryAdTargeting = FlurryAdTargeting()
+            flurryAdTargeting.enableTestAds = true
+            adNative.setTargeting(flurryAdTargeting)
+        }
+
         adNative.fetchAd()
         onStart(adViewHolder.itemView)
     }
@@ -91,6 +110,7 @@ class FlurryAdLoader(context: Context, ad: Ad) : AdLoader(context, ad) {
         lateinit var installBtn: TextView
         lateinit var titleTv: TextView
         lateinit var contentTv: TextView
+        lateinit var videoContainer: ViewGroup
 
         init {
             itemView = LayoutInflater.from(context).inflate(R.layout.flurry_large_ad_view, null)
@@ -98,6 +118,7 @@ class FlurryAdLoader(context: Context, ad: Ad) : AdLoader(context, ad) {
             installBtn = itemView.findViewById(R.id.ad_action_btn) as TextView
             titleTv = itemView.findViewById(R.id.ad_title) as TextView
             contentTv = itemView.findViewById(R.id.ad_description) as TextView
+            videoContainer = itemView.findViewById(R.id.ad_video_container) as ViewGroup
         }
 
     }

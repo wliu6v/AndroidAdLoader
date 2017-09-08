@@ -10,6 +10,13 @@
         android:scaleType="centerCrop"
         />
 
+    <FrameLayout
+        android:id="@+id/ad_video_container"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:visibility="gone"
+        />
+
     <TextView
         android:id="@+id/ad_action_btn"
         android:layout_width="wrap_content"
